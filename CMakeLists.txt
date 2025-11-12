@@ -7,7 +7,7 @@ project(jschema)
 
 add_executable(app)
 
-add_subdirectory(include/json)
+include(include/nlohmann_json.cmake)
 include(include/jsoncons.cmake)
 
 target_sources(app PRIVATE
