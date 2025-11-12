@@ -1,8 +1,10 @@
 {
+  "deno.enable": true,
+  "C_Cpp.clang_format_fallbackStyle": "Google",
   "files.associations": {
     "*.css": "postcss",
     "optional": "cpp",
-    "string": "cpp"
-  },
-  "deno.enable": true
+    "string": "cpp",
+    "iostream": "cpp"
+  }
 }
