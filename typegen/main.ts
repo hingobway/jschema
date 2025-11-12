@@ -1,11 +1,33 @@
 import type {} from 'npm:@types/node';
-import { readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { readFile, writeFile, readdir } from 'node:fs/promises';
+import { dirname, fromFileUrl, join } from 'jsr:@std/path';
 
 import { codegen } from './quicktype.ts';
 
-const schema = await readFile(join(__dirname, '../schema/base.json'), 'utf-8');
+const ROOT_DIR = import.meta.dirname || dirname(fromFileUrl(import.meta.url));
 
-const code = await codegen({ name: 'base', schema, lang: 'c++', opts: {} });
+const schemaDir = join(ROOT_DIR, '../schema');
+const entries = await readdir(schemaDir, { withFileTypes: true });
+const schemas = new Map<string, string>();
+for (const entry of entries) {
+  if (!entry.isFile()) continue;
+  const match = entry.name.match(/^(.+)\.json$/);
+  if (!match) continue;
+  schemas.set(match[1], await readFile(join(schemaDir, entry.name), 'utf-8'));
+}
 
-await writeFile(join(__dirname, '../src/scgen.h'), code, 'utf-8');
+const code = await codegen({
+  schemas,
+  config: {
+    lang: 'c++',
+
+    rendererOptions: {
+      boost: false,
+      'code-format': 'with-struct',
+      'include-location': 'global-include',
+      namespace:'schema'
+    },
+  },
+});
+
+await writeFile(join(ROOT_DIR, '../src/scgen.h'), code, 'utf-8');

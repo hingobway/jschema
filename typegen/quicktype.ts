@@ -3,32 +3,30 @@ import {
   InputData,
   JSONSchemaInput,
   quicktype,
-  RendererOptions,
 } from 'npm:quicktype-core';
 
-export async function codegen<Lang extends LangEnum>(opts: {
-  name: string;
-  schema: string;
-  lang: Lang;
-  opts: Partial<RendererOptions<Lang>>;
+export async function codegen(opts: {
+  schemas: Map<string, string>;
+  config: QTOpts;
 }) {
   const input = new JSONSchemaInput(new FetchingJSONSchemaStore());
-  await input.addSource({
-    name: opts.name,
-    schema: opts.schema,
-  });
+
+  for await (const [name, schema] of opts.schemas) {
+    await input.addSource({ name, schema });
+  }
+
   const data = new InputData();
   data.addInput(input);
 
   const { lines } = await quicktype({
     inputData: data,
-    lang: opts.lang,
-    rendererOptions: opts.opts
+    ...opts.config,
   });
   return lines.join('\n');
 }
 
 type LangBase = Parameters<typeof quicktype>[0];
+export type QTOpts = Omit<LangBase, 'inputData'>;
 export type LangEnum = ExtractLiterals<LangBase['lang']>;
 
 type ExtractLiterals<T> = T extends string

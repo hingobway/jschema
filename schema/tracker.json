@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "person": { "$ref": "#/$defs/person" },
+    "loc": { "$ref": "#/$defs/coord" }
+  },
+  "required": ["person", "loc"],
+  "$defs": {
+    "coord": {
+      "title": "coord",
+      "description": "A geographical coordinate",
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "lon": {
+          "type": "number"
+        }
+      },
+      "required": ["lat", "lon"]
+    },
+
+    "person": {
+      "title": "person",
+      "description": "A human person",
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string" }
+      },
+      "required": ["firstName"]
+    }
+  }
+}

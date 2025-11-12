@@ -3,7 +3,9 @@
   "lint": {
     "rules": {
       "exclude": [
-        "no-explicit-any"
+        "no-explicit-any",
+        "no-unversioned-import",
+        "no-import-prefix"
       ]
     }
   }

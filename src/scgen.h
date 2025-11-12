@@ -4,7 +4,7 @@
 //
 //  Then include this file, and then do
 //
-//     Coordinate data = nlohmann::json::parse(jsonString);
+//     Tracker data = nlohmann::json::parse(jsonString);
 
 #pragma once
 
@@ -37,11 +37,11 @@ namespace nlohmann {
 }
 #endif
 
-namespace quicktype {
+namespace schema {
     using nlohmann::json;
 
-    #ifndef NLOHMANN_UNTYPED_quicktype_HELPER
-    #define NLOHMANN_UNTYPED_quicktype_HELPER
+    #ifndef NLOHMANN_UNTYPED_schema_HELPER
+    #define NLOHMANN_UNTYPED_schema_HELPER
     inline json get_untyped(const json & j, const char * property) {
         if (j.find(property) != j.end()) {
             return j.at(property).get<json>();
@@ -54,8 +54,8 @@ namespace quicktype {
     }
     #endif
 
-    #ifndef NLOHMANN_OPTIONAL_quicktype_HELPER
-    #define NLOHMANN_OPTIONAL_quicktype_HELPER
+    #ifndef NLOHMANN_OPTIONAL_schema_HELPER
+    #define NLOHMANN_OPTIONAL_schema_HELPER
     template <typename T>
     inline std::shared_ptr<T> get_heap_optional(const json & j, const char * property) {
         auto it = j.find(property);
@@ -87,24 +87,68 @@ namespace quicktype {
     /**
      * A geographical coordinate
      */
-    struct Coordinate {
-        std::optional<double> latitude;
-        std::optional<double> longitude;
+    struct Coord {
+        double lat;
+        double lon;
+    };
+
+    /**
+     * A human person
+     */
+    struct Person {
+        std::optional<std::string> email;
+        std::string first_name;
+        std::optional<std::string> last_name;
+    };
+
+    struct Tracker {
+        Coord loc;
+        Person person;
     };
 }
 
-namespace quicktype {
-    void from_json(const json & j, Coordinate & x);
-    void to_json(json & j, const Coordinate & x);
+namespace schema {
+    void from_json(const json & j, Coord & x);
+    void to_json(json & j, const Coord & x);
 
-    inline void from_json(const json & j, Coordinate& x) {
-        x.latitude = get_stack_optional<double>(j, "latitude");
-        x.longitude = get_stack_optional<double>(j, "longitude");
+    void from_json(const json & j, Person & x);
+    void to_json(json & j, const Person & x);
+
+    void from_json(const json & j, Tracker & x);
+    void to_json(json & j, const Tracker & x);
+
+    inline void from_json(const json & j, Coord& x) {
+        x.lat = j.at("lat").get<double>();
+        x.lon = j.at("lon").get<double>();
     }
 
-    inline void to_json(json & j, const Coordinate & x) {
+    inline void to_json(json & j, const Coord & x) {
         j = json::object();
-        j["latitude"] = x.latitude;
-        j["longitude"] = x.longitude;
+        j["lat"] = x.lat;
+        j["lon"] = x.lon;
+    }
+
+    inline void from_json(const json & j, Person& x) {
+        x.email = get_stack_optional<std::string>(j, "email");
+        x.first_name = j.at("firstName").get<std::string>();
+        x.last_name = get_stack_optional<std::string>(j, "lastName");
+    }
+
+    inline void to_json(json & j, const Person & x) {
+        j = json::object();
+        j["email"] = x.email;
+        j["firstName"] = x.first_name;
+        j["lastName"] = x.last_name;
+    }
+
+    inline void from_json(const json & j, Tracker& x) {
+        x.loc = j.at("loc").get<Coord>();
+        x.person = j.at("person").get<Person>();
+    }
+
+    inline void to_json(json & j, const Tracker & x) {
+        j = json::object();
+        j["loc"] = x.loc;
+        j["person"] = x.person;
     }
 }

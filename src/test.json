@@ -1,0 +1,11 @@
+{
+  "$schema": "../schema/tracker.json",
+  "person": {
+    "firstName": "Michael",
+    "lastName": "Foster"
+  },
+  "loc": {
+    "lat": 34,
+    "lon": -29
+  }
+}
