@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.css": "postcss",
+    "optional": "cpp",
+    "string": "cpp"
+  },
+  "deno.enable": true
+}
