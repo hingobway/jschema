@@ -8,6 +8,7 @@ project(jschema)
 add_executable(app)
 
 add_subdirectory(include/json)
+include(include/jsoncons.cmake)
 
 target_sources(app PRIVATE
   src/main.cpp
@@ -15,4 +16,5 @@ target_sources(app PRIVATE
 
 target_link_libraries(app PRIVATE
   nlohmann_json
+  jsoncons
 )
